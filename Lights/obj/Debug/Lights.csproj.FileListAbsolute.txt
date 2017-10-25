@@ -1,0 +1,6 @@
+/Users/edwardridge/RiderProjects/Lights/Lights/obj/Debug/Lights.csprojResolveAssemblyReference.cache
+/Users/edwardridge/RiderProjects/Lights/Lights/obj/Debug/Lights.csproj.CoreCompileInputs.cache
+/Users/edwardridge/RiderProjects/Lights/Lights/bin/Debug/Lights.dll
+/Users/edwardridge/RiderProjects/Lights/Lights/bin/Debug/Lights.pdb
+/Users/edwardridge/RiderProjects/Lights/Lights/obj/Debug/Lights.dll
+/Users/edwardridge/RiderProjects/Lights/Lights/obj/Debug/Lights.pdb
