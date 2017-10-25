@@ -17,7 +17,7 @@ namespace Lights.Console
             var fitnessEvaluator = new BinaryStringFitnessEvaluator();
             var breeder = new BinaryStringBreeder();
             var mutator = new BinaryStringMutator(random);
-            var crossoverSelector = new TruncationCrossoverSelector<BinaryStringIndividual>();
+            var crossoverSelector = new EliteBreedingSelector<BinaryStringIndividual>();
             
             var evolver = new Evolver<BinaryStringIndividual>(fitnessEvaluator, crossoverSelector, breeder, mutator);
             

@@ -6,49 +6,53 @@ namespace Lights
 {
     public interface IIndividual
     {
+        int Fitness { get; set; }
     }
 
     public class Evolver<T> where T : IIndividual
     {
         private readonly IFitnessEvaluator<T> _fitnessEvaluator;
-        private readonly ICrossoverSelector<T> _crossoverSelector;
+        private readonly IBreedingSelector<T> _breedingSelector;
         private readonly IBreeder<T> _breeder;
         private readonly IMutater<T> _mutater;
         private Random _random;
+        
+        public int PercentageForBreeding { get; set; } = 50;        
+        public int PercentageToDie { get; set; } = 50;
 
-        public Evolver(IFitnessEvaluator<T> fitnessEvaluator, ICrossoverSelector<T> crossoverSelector, IBreeder<T> breeder, IMutater<T> mutater)
+
+        public Evolver(IFitnessEvaluator<T> fitnessEvaluator, IBreedingSelector<T> breedingSelector, IBreeder<T> breeder, IMutater<T> mutater)
         {
             _fitnessEvaluator = fitnessEvaluator;
-            _crossoverSelector = crossoverSelector;
+            _breedingSelector = breedingSelector;
             _breeder = breeder;
             _mutater = mutater;
             _random = new Random();
         }
         
         public Population<T> GenerateNextPopulation(Population<T> population)
-        {
-            var percentageToTakeForBreeding = 50;
-
+        {       
             var individuals = population.GetIndividuals();
-            var orderedPopulation = individuals.OrderByDescending(_fitnessEvaluator.Evaluate);
+            foreach (var individual in individuals)
+            {
+                individual.Fitness = _fitnessEvaluator.Evaluate(individual);
+            }
             
             var breedingPopulation =
-                _crossoverSelector.ChooseCandidatesForCrossover(individuals, _fitnessEvaluator,
-                    percentageToTakeForBreeding).ToArray();
+                _breedingSelector.ChooseCandidatesForBreeding(individuals, PercentageForBreeding).ToArray();
 
-            var percentageToRemove = 50;
-            var populationCountToRemove = PopulationToTake(percentageToRemove, individuals.Count);
-            var newPopulation = orderedPopulation.Reverse().Skip(populationCountToRemove).ToList();
+            var populationCountToRemove = PopulationToTake(PercentageToDie, individuals.Count);
+            var newPopulation = individuals.OrderBy(o => o.Fitness).Skip(populationCountToRemove).ToList();
 
-            while (newPopulation.Count() < individuals.Count)
+            while (newPopulation.Count < individuals.Count)
             {
                 var parent1 = GetRandomParent(breedingPopulation);
                 var parent2 = GetRandomParent(breedingPopulation);
 
-                var newInidivual = _breeder.Breed(parent1, parent2);
-                _mutater.Mutate(newInidivual);
+                var newIndividual = _breeder.Breed(parent1, parent2);
+                _mutater.Mutate(newIndividual);
             
-                newPopulation.Add(newInidivual);
+                newPopulation.Add(newIndividual);
             }
 
             return new Population<T>(newPopulation);
@@ -56,15 +60,13 @@ namespace Lights
 
         private T GetRandomParent(T[] breedingPopulation)
         {
-            var index1 = _random.Next(0, breedingPopulation.Count() - 1);
-            var parent1 = breedingPopulation[index1];
-            return parent1;
+            var index = _random.Next(0, breedingPopulation.Length - 1);
+            return breedingPopulation[index];
         }
 
         private static int PopulationToTake(int percentageToTake, int populationCount)
         {
-            var populationToTakeDenominator = (100 / percentageToTake);
-            var populationCountToTake = populationCount / populationToTakeDenominator;
+            var populationCountToTake = populationCount / (100 / percentageToTake);
             return populationCountToTake;
         }
     }
@@ -72,12 +74,10 @@ namespace Lights
     public class Population<T> where T : IIndividual
     {
         private List<T> _individuals;
-        private readonly Random _random;
 
         public Population(List<T> individuals)
         {
             _individuals = individuals;
-            _random = new Random();
         }
 
         public List<T> GetIndividuals()
@@ -98,12 +98,11 @@ namespace Lights
         }
     }
     
-    public class TruncationCrossoverSelector<T> : ICrossoverSelector<T> where T : IIndividual
+    public class EliteBreedingSelector<T> : IBreedingSelector<T> where T : IIndividual
     {
-        public IEnumerable<T> ChooseCandidatesForCrossover(IEnumerable<T> population, IFitnessEvaluator<T> fitnessEvaluator,
-            int percentageToTake)
+        public IEnumerable<T> ChooseCandidatesForBreeding(IEnumerable<T> population, int percentageToTake)
         {
-            var orderedPopulation = population.OrderByDescending(fitnessEvaluator.Evaluate);
+            var orderedPopulation = population.OrderByDescending(o => o.Fitness);
             var breedingPopulation = GetBreedingPopulation(percentageToTake, orderedPopulation).ToArray();
 
             return breedingPopulation;
@@ -124,10 +123,9 @@ namespace Lights
         }
     }
 
-    public interface ICrossoverSelector<T> where T : IIndividual
+    public interface IBreedingSelector<T> where T : IIndividual
     {
-        IEnumerable<T> ChooseCandidatesForCrossover(IEnumerable<T> population,
-            IFitnessEvaluator<T> fitnessEvaluator, int percentageToTake);
+        IEnumerable<T> ChooseCandidatesForBreeding(IEnumerable<T> population, int percentageToTake);
     }
 
     public interface IIndividualFactory<T> where T : IIndividual

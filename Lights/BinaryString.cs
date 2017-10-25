@@ -12,6 +12,8 @@ namespace Lights
         }
 
         public string BinaryString { get; set; }
+        
+        public int Fitness { get; set; }
     }
 
     public class BinaryStringFitnessEvaluator : IFitnessEvaluator<BinaryStringIndividual>
