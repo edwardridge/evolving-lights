@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinaryLights.cs" />
     <Compile Include="BinaryString.cs" />
     <Compile Include="Evolution.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

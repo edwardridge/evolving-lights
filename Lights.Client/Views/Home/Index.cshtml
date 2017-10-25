@@ -1,0 +1,43 @@
+﻿@{
+  ViewBag.Title = "Home Page";
+}
+
+<style>
+  body {
+    padding: 20px;
+  }
+
+  .light{
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    margin: 0px;
+  }
+
+  .colorLine{
+    border: 2px solid black;
+    padding: 0px;
+    margin: 5px 0;
+    display: inline-block;
+    clear: left;
+    float: left;
+  }
+</style>
+
+<div ng-app="MyApp" style="margin-top: 50px">
+  <div ng-controller="lights as ctrl">
+    <div>
+      Next population: <input type="button" ng-click="ctrl.nextPopulation()">
+      </input>
+    </div>
+    <div ng-repeat="colorLine in ctrl.colorLines" class="colorLine">
+      <span class="light" ng-repeat="color in colorLine" ng-style="ctrl.setCssColor(color)">
+      </span>
+    </div>
+    
+    <div>
+      {{ctrl.test}}
+    </div>
+  </div> 
+</div>
+ 

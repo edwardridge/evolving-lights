@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Lights.Console
 {
@@ -7,25 +8,49 @@ namespace Lights.Console
     {
         public static void Main(string[] args)
         {
+            GenerateBinaryLights();
+        }
+
+        private static void GenerateBinaryLights()
+        {
             var random = new Random();
-            var binaryStringIndividualFactory = new BinaryStringIndividualFactory(random);
-            var formatter = new BinaryStringPopulationFormatter();
-            
-            var population = Population<BinaryStringIndividual>.GenerateInitialPopulation(binaryStringIndividualFactory , 10);
+            var factory = new BinaryLightsIndividualFactory(random);
+            var formatter = new BinaryLightsPopulationFormatter();
+
+            var population = Population<BinaryLightsIndividual>.GenerateInitialPopulation(factory, 10);
             formatter.Format(population);
-            
-            var fitnessEvaluator = new BinaryStringFitnessEvaluator();
-            var breeder = new BinaryStringBreeder();
-            var mutator = new BinaryStringMutator(random);
-            var crossoverSelector = new EliteBreedingSelector<BinaryStringIndividual>();
-            
-            var evolver = new Evolver<BinaryStringIndividual>(fitnessEvaluator, crossoverSelector, breeder, mutator);
-            
+
+            var evolver = BinaryLightsEvololverFactory.Create();
+
             for (int i = 0; i < 50; i++)
             {
                 population = evolver.GenerateNextPopulation(population);
             }
-            
+
+            formatter.Format(population);
+        }
+        
+        private static void GenerateBinaryStrings()
+        {
+            var random = new Random();
+            var binaryStringIndividualFactory = new BinaryStringIndividualFactory(random);
+            var formatter = new BinaryStringPopulationFormatter();
+
+            var population = Population<BinaryStringIndividual>.GenerateInitialPopulation(binaryStringIndividualFactory, 10);
+            formatter.Format(population);
+
+            var fitnessEvaluator = new BinaryStringFitnessEvaluator();
+            var breeder = new BinaryStringBreeder();
+            var mutator = new BinaryStringMutator(random);
+            var crossoverSelector = new EliteBreedingSelector<BinaryStringIndividual>();
+
+            var evolver = new Evolver<BinaryStringIndividual>(fitnessEvaluator, crossoverSelector, breeder, mutator);
+
+            for (int i = 0; i < 50; i++)
+            {
+                population = evolver.GenerateNextPopulation(population);
+            }
+
             formatter.Format(population);
         }
     }
@@ -46,7 +71,30 @@ namespace Lights.Console
             System.Console.WriteLine();
         }
     }
+    
+        
+    public class BinaryLightsPopulationFormatter : IPopulationFormatter<BinaryLightsIndividual>
+    {
+        public void Format(Population<BinaryLightsIndividual> population)
+        {
+            foreach (var individual in population.GetIndividuals())
+            {
+                var sb = new StringBuilder();
+                foreach (var color in individual.Colors)
+                {
+                    sb.Append(color.IsRed() ? "R" : "B");
+                }
+                
+                System.Console.WriteLine(sb.ToString());
+            }
 
+            System.Console.WriteLine();
+            System.Console.WriteLine();
+            System.Console.WriteLine();
+            System.Console.WriteLine();
+        }
+    }
+    
     public interface IPopulationFormatter<T> where T : IIndividual
     {
         void Format(Population<T> population);
