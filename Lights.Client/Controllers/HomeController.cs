@@ -9,7 +9,16 @@ namespace Lights.Client.Controllers
 {
     public class HomeController : Controller
     {
-        public static Population<BinaryLightsIndividual> Population;
+        public static Population<LightsIndividual> Population;
+        public IIndividualFactory<LightsIndividual> Factory;
+        public Evolver<LightsIndividual> Evolver;
+
+        public HomeController()
+        {
+            var random = new Random();
+            Factory = new RandomLightsIndividualFactory(random);
+            Evolver = RandomLightsEvololverFactory.Create();
+        }
         
         public ActionResult Index()
         {
@@ -18,19 +27,19 @@ namespace Lights.Client.Controllers
 
         public JsonResult GetInitialPopulation()
         {
-            var random = new Random();
-            var factory = new BinaryLightsIndividualFactory(random);
-            
-            Population = Population<BinaryLightsIndividual>.GenerateInitialPopulation(factory, 10);
+            Population = Population<LightsIndividual>.GenerateInitialPopulation(Factory, 10);
             return Json(Population.GetIndividuals(), JsonRequestBehavior.AllowGet);
         }
         
         public JsonResult GetNextPopulation()
         {
-            var evolver = BinaryLightsEvololverFactory.Create();
-
-            Population = evolver.GenerateNextPopulation(Population);
+            Population = Evolver.GenerateNextPopulations(Population, 10);
             return Json(Population.GetIndividuals(), JsonRequestBehavior.AllowGet);
+        }
+        
+        public string GetEvolutionDetails()
+        {
+            return Evolver.GetDetails();
         }
     }
 }

@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ColorMine, Version=1.1.3.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\ColorMine.1.1.3.0\lib\ColorMine.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -41,8 +44,19 @@
   <ItemGroup>
     <Compile Include="BinaryLights.cs" />
     <Compile Include="BinaryString.cs" />
+    <Compile Include="Color.cs" />
     <Compile Include="Evolution.cs" />
+    <Compile Include="FiveLights.cs" />
+    <Compile Include="LightIsRedFitnessEvaluator.cs" />
+    <Compile Include="LightsBreeder.cs" />
+    <Compile Include="LightsIndividual.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomLights.cs" />
+    <Compile Include="SimpleEuclideanLightFitnessEvaluator.cs" />
+    <Compile Include="SimpleLABLightFitnessEvaluator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

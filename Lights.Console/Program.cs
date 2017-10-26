@@ -17,7 +17,7 @@ namespace Lights.Console
             var factory = new BinaryLightsIndividualFactory(random);
             var formatter = new BinaryLightsPopulationFormatter();
 
-            var population = Population<BinaryLightsIndividual>.GenerateInitialPopulation(factory, 10);
+            var population = Population<LightsIndividual>.GenerateInitialPopulation(factory, 10);
             formatter.Format(population);
 
             var evolver = BinaryLightsEvololverFactory.Create();
@@ -73,9 +73,9 @@ namespace Lights.Console
     }
     
         
-    public class BinaryLightsPopulationFormatter : IPopulationFormatter<BinaryLightsIndividual>
+    public class BinaryLightsPopulationFormatter : IPopulationFormatter<LightsIndividual>
     {
-        public void Format(Population<BinaryLightsIndividual> population)
+        public void Format(Population<LightsIndividual> population)
         {
             foreach (var individual in population.GetIndividuals())
             {

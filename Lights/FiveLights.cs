@@ -4,11 +4,24 @@ using System.Text;
 
 namespace Lights
 {
-    public class BinaryLightsMutator : IMutater<LightsIndividual>
+    public class FiveLightsColorGenerator
+    {
+        public static Color GetColor(int colorNum)
+        {
+            if (colorNum == 0) return Color.NewBlack();
+            if (colorNum == 1) return Color.NewBlue();
+            if (colorNum == 2) return Color.NewGreen();
+            if (colorNum == 3) return Color.NewRed();
+            if (colorNum == 4) return Color.NewWhite();
+            throw new Exception();
+        }
+    } 
+    
+    public class FiveLightsMutator : IMutater<LightsIndividual>
     {
         private Random _random;
 
-        public BinaryLightsMutator(Random random)
+        public FiveLightsMutator(Random random)
         {
             _random = random;
         }
@@ -17,22 +30,22 @@ namespace Lights
         {
             for (var index = 0; index < individual.Colors.Count; index++)
             {
-                var color = individual.Colors[index];
                 var randVal = _random.Next(0, 100);
                 if (randVal < 5)
                 {
-                    var newColor = color.IsRed() ? Color.NewBlue() : Color.NewRed();
+                    var colorRandVal = _random.Next(0, 5);
+                    var newColor = FiveLightsColorGenerator.GetColor(colorRandVal);
                     individual.Colors[index] = newColor;
                 }
             }
         }
     }
     
-    public class BinaryLightsIndividualFactory : IIndividualFactory<LightsIndividual>
+    public class FiveLightsIndividualFactory : IIndividualFactory<LightsIndividual>
     {
         private Random _random;
 
-        public BinaryLightsIndividualFactory(Random random)
+        public FiveLightsIndividualFactory(Random random)
         {
             _random = random;
         }
@@ -42,21 +55,21 @@ namespace Lights
             var colorList = new List<Color>();
             for (int i = 0; i < 20; i++)
             {
-                colorList.Add(_random.Next(0, 2) == 0 ? Color.NewRed() : Color.NewBlue());
+                colorList.Add(FiveLightsColorGenerator.GetColor(_random.Next(0, 5)));
             }
             
             return new LightsIndividual(colorList);
         }
     }
 
-    public class BinaryLightsEvololverFactory
+    public class FiveLightsEvololverFactory
     {
         public static Evolver<LightsIndividual> Create()
         {
             var random = new Random();
-            var fitnessEvaluator = new LightIsRedFitnessEvaluator();
+            var fitnessEvaluator = new SimpleEuclideanLightFitnessEvaluator(Color.NewRed());
             var breeder = new LightsBreeder();
-            var mutator = new BinaryLightsMutator(random);
+            var mutator = new FiveLightsMutator(random);
             var crossoverSelector = new EliteBreedingSelector<LightsIndividual>();
 
             return new Evolver<LightsIndividual>(fitnessEvaluator, crossoverSelector, breeder, mutator);

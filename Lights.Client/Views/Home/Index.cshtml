@@ -27,7 +27,7 @@
 <div ng-app="MyApp" style="margin-top: 50px">
   <div ng-controller="lights as ctrl">
     <div>
-      Next population: <input type="button" ng-click="ctrl.nextPopulation()">
+      Next population: <input type="button" ng-click="ctrl.changeColors = !ctrl.changeColors" ng-value="ctrl.changeColors">
       </input>
     </div>
     <div ng-repeat="colorLine in ctrl.colorLines" class="colorLine">
@@ -35,9 +35,8 @@
       </span>
     </div>
     
-    <div>
-      {{ctrl.test}}
-    </div>
+    <pre style="border: none; background: white;">{{ctrl.evolutionDetails}}
+    </pre>
   </div> 
 </div>
  

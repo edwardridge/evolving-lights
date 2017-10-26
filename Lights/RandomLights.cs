@@ -4,11 +4,22 @@ using System.Text;
 
 namespace Lights
 {
-    public class BinaryLightsMutator : IMutater<LightsIndividual>
+    public class RandomLightsGenerator
+    {
+        public static Color GenerateRandomColor(Random random)
+        {
+            var redColorRandVal = random.Next(0, 255);
+            var greenColorRandVal = random.Next(0, 255);
+            var blueColorRandVal = random.Next(0, 255);
+            return new Color(redColorRandVal, greenColorRandVal, blueColorRandVal);
+        }
+    }
+   
+    public class RandomLightsMutator : IMutater<LightsIndividual>
     {
         private Random _random;
 
-        public BinaryLightsMutator(Random random)
+        public RandomLightsMutator(Random random)
         {
             _random = random;
         }
@@ -17,22 +28,21 @@ namespace Lights
         {
             for (var index = 0; index < individual.Colors.Count; index++)
             {
-                var color = individual.Colors[index];
                 var randVal = _random.Next(0, 100);
-                if (randVal < 5)
+                if (randVal < 10)
                 {
-                    var newColor = color.IsRed() ? Color.NewBlue() : Color.NewRed();
+                    var newColor = RandomLightsGenerator.GenerateRandomColor(_random);
                     individual.Colors[index] = newColor;
                 }
             }
         }
     }
     
-    public class BinaryLightsIndividualFactory : IIndividualFactory<LightsIndividual>
+    public class RandomLightsIndividualFactory : IIndividualFactory<LightsIndividual>
     {
         private Random _random;
 
-        public BinaryLightsIndividualFactory(Random random)
+        public RandomLightsIndividualFactory(Random random)
         {
             _random = random;
         }
@@ -42,21 +52,21 @@ namespace Lights
             var colorList = new List<Color>();
             for (int i = 0; i < 20; i++)
             {
-                colorList.Add(_random.Next(0, 2) == 0 ? Color.NewRed() : Color.NewBlue());
+                colorList.Add(RandomLightsGenerator.GenerateRandomColor(_random));
             }
             
             return new LightsIndividual(colorList);
         }
     }
 
-    public class BinaryLightsEvololverFactory
+    public class RandomLightsEvololverFactory
     {
         public static Evolver<LightsIndividual> Create()
         {
             var random = new Random();
-            var fitnessEvaluator = new LightIsRedFitnessEvaluator();
+            var fitnessEvaluator = new SimpleLABLightFitnessEvaluator(Color.NewRed());
             var breeder = new LightsBreeder();
-            var mutator = new BinaryLightsMutator(random);
+            var mutator = new RandomLightsMutator(random);
             var crossoverSelector = new EliteBreedingSelector<LightsIndividual>();
 
             return new Evolver<LightsIndividual>(fitnessEvaluator, crossoverSelector, breeder, mutator);
