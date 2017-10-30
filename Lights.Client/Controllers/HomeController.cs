@@ -27,7 +27,7 @@ namespace Lights.Client.Controllers
 
         public JsonResult GetInitialPopulation()
         {
-            Population = Population<LightsIndividual>.GenerateInitialPopulation(Factory, 10);
+            Population = Population<LightsIndividual>.GenerateInitialPopulation(Factory, 20);
             return Json(Population.GetIndividuals(), JsonRequestBehavior.AllowGet);
         }
         

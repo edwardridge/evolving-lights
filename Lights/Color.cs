@@ -20,6 +20,17 @@
             return this.Red == 255 && this.Green == 0 && this.Blue == 0;
         }
 
+        public void EnforceMinAndMax()
+        {
+            if (this.Red < 0) this.Red = 0;
+            if (this.Green < 0) this.Green = 0;
+            if (this.Blue < 0) this.Blue = 0;
+            
+            if (this.Red > 255) this.Red = 255;
+            if (this.Green > 255) this.Green = 255;
+            if (this.Blue > 255) this.Blue = 255;
+        }
+
         public static Color NewRed()
         {
             return new Color(255, 0, 0);

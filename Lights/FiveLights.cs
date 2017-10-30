@@ -68,7 +68,7 @@ namespace Lights
         {
             var random = new Random();
             var fitnessEvaluator = new SimpleEuclideanLightFitnessEvaluator(Color.NewRed());
-            var breeder = new LightsBreeder();
+            var breeder = new HalfwayPointLightsBreeder();
             var mutator = new FiveLightsMutator(random);
             var crossoverSelector = new EliteBreedingSelector<LightsIndividual>();
 

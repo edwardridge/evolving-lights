@@ -37,7 +37,7 @@ namespace Lights
             }
         }
     }
-    
+
     public class RandomLightsIndividualFactory : IIndividualFactory<LightsIndividual>
     {
         private Random _random;
@@ -65,7 +65,7 @@ namespace Lights
         {
             var random = new Random();
             var fitnessEvaluator = new SimpleLABLightFitnessEvaluator(Color.NewRed());
-            var breeder = new LightsBreeder();
+            var breeder = new AlternatingLightsBreeder();
             var mutator = new RandomLightsMutator(random);
             var crossoverSelector = new EliteBreedingSelector<LightsIndividual>();
 

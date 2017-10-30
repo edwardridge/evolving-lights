@@ -55,7 +55,7 @@ namespace Lights
         {
             var random = new Random();
             var fitnessEvaluator = new LightIsRedFitnessEvaluator();
-            var breeder = new LightsBreeder();
+            var breeder = new HalfwayPointLightsBreeder();
             var mutator = new BinaryLightsMutator(random);
             var crossoverSelector = new EliteBreedingSelector<LightsIndividual>();
 

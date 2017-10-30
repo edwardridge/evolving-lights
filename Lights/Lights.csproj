@@ -48,12 +48,13 @@
     <Compile Include="Evolution.cs" />
     <Compile Include="FiveLights.cs" />
     <Compile Include="LightIsRedFitnessEvaluator.cs" />
-    <Compile Include="LightsBreeder.cs" />
+    <Compile Include="HalfwayPointLightsBreeder.cs" />
     <Compile Include="LightsIndividual.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomLights.cs" />
     <Compile Include="SimpleEuclideanLightFitnessEvaluator.cs" />
     <Compile Include="SimpleLABLightFitnessEvaluator.cs" />
+    <Compile Include="SlightChangeLightsMutator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
