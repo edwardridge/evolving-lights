@@ -1,17 +1,37 @@
+window.apiBase = "http://127.0.0.1:5001/Lights/";
+
+$(function() {
+    var $cp2 = $('#cp2');
+    $cp2.colorpicker({
+        format: 'rgb'
+    }).on('hidePicker', function(e) {
+        var rgb = e.color.toRGB();
+        var data = {
+            "red": rgb.r,
+            "green": rgb.g,
+            "blue": rgb.b
+        }
+        $.post(window.apiBase + "SetTargetColor", data).then(function(result){
+        }).catch(function (error){
+            console.log(error.data);
+        });
+    });
+});
+
 // Write your Javascript code.
 angular.module('MyApp', [])
     .controller('lights', ['$timeout', '$http', lights])
 
 function lights($timeout, $http){
-    // this.colorLines = createColors();
     this.changeColors = false;
+    
     var that = this;
 
-    $http.get("http://127.0.0.1:5001/Home/GetInitialPopulation").then(function(result){
+    $http.get(window.apiBase + "GetInitialPopulation").then(function(result){
         that.colorLines = result.data.map(s => s.Colors);;
     });
 
-    $http.get("http://127.0.0.1:5001/Home/GetEvolutionDetails").then(function(result){
+    $http.get(window.apiBase + "GetEvolutionDetails").then(function(result){
         that.evolutionDetails = result.data;
     });
     
@@ -21,10 +41,10 @@ function lights($timeout, $http){
             "rgb(" + color.Red + ", " + color.Green + ", " + color.Blue + ")"
         }
     }
-    
+
     this.nextPopulation = function () {
         if (that.changeColors){
-            $http.get("http://127.0.0.1:5001/Home/GetNextPopulation").then(function(result){
+            $http.post(window.apiBase + "GetNextPopulation").then(function(result){
                 that.colorLines = result.data.map(s => s.Colors);
             });
         }

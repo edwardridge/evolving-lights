@@ -4,22 +4,27 @@ using System.Text;
 
 namespace Lights
 {
-    public class RandomLightsGenerator
+    public class RandomHalfLightsGenerator
     {
         public static Color GenerateRandomColor(Random random)
         {
-            var redColorRandVal = random.Next(0, 255);
-            var greenColorRandVal = random.Next(0, 255);
-            var blueColorRandVal = random.Next(0, 255);
+            var redColorRandVal = GenerateRandomValue(random);
+            var greenColorRandVal = GenerateRandomValue(random);
+            var blueColorRandVal = GenerateRandomValue(random);
             return new Color(redColorRandVal, greenColorRandVal, blueColorRandVal);
+        }
+
+        private static int GenerateRandomValue(Random random)
+        {
+            return (random.Next(0, 124) * 2) - 1;
         }
     }
    
-    public class RandomLightsMutator : IMutater<LightsIndividual>
+    public class RandomHalfLightsMutator : IMutater<LightsIndividual>
     {
         private Random _random;
 
-        public RandomLightsMutator(Random random)
+        public RandomHalfLightsMutator(Random random)
         {
             _random = random;
         }
@@ -31,18 +36,18 @@ namespace Lights
                 var randVal = _random.Next(0, 100);
                 if (randVal < 10)
                 {
-                    var newColor = RandomLightsGenerator.GenerateRandomColor(_random);
+                    var newColor = RandomHalfLightsGenerator.GenerateRandomColor(_random);
                     individual.Colors[index] = newColor;
                 }
             }
         }
     }
 
-    public class RandomLightsIndividualFactory : IIndividualFactory<LightsIndividual>
+    public class RandomHalfLightsIndividualFactory : IIndividualFactory<LightsIndividual>
     {
         private Random _random;
 
-        public RandomLightsIndividualFactory(Random random)
+        public RandomHalfLightsIndividualFactory(Random random)
         {
             _random = random;
         }
@@ -52,7 +57,7 @@ namespace Lights
             var colorList = new List<Color>();
             for (int i = 0; i < 20; i++)
             {
-                colorList.Add(RandomLightsGenerator.GenerateRandomColor(_random));
+                colorList.Add(RandomHalfLightsGenerator.GenerateRandomColor(_random));
             }
             
             return new LightsIndividual(colorList);

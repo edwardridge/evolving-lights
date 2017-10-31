@@ -45,12 +45,15 @@
     <Compile Include="BinaryLights.cs" />
     <Compile Include="BinaryString.cs" />
     <Compile Include="Color.cs" />
+    <Compile Include="DefaultLightsEvoloverBuilder.cs" />
     <Compile Include="Evolution.cs" />
+    <Compile Include="EvolverBuilder.cs" />
     <Compile Include="FiveLights.cs" />
     <Compile Include="LightIsRedFitnessEvaluator.cs" />
     <Compile Include="HalfwayPointLightsBreeder.cs" />
     <Compile Include="LightsIndividual.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomHalfLights.cs" />
     <Compile Include="RandomLights.cs" />
     <Compile Include="SimpleEuclideanLightFitnessEvaluator.cs" />
     <Compile Include="SimpleLABLightFitnessEvaluator.cs" />
