@@ -14,9 +14,9 @@ namespace Lights
             targetLab = ConvertColorToLab(targetColor);
         }
 
-        public int Evaluate(LightsIndividual individual)
+        public double Evaluate(LightsIndividual individual)
         {
-            var totalDistance = 0;
+            var totalDistance = 0.0;
             foreach (var color in individual.Colors)
             {
                 var lab = ConvertColorToLab(color);
@@ -25,7 +25,7 @@ namespace Lights
                 var bDiff = Math.Pow(targetLab.B - lab.B, 2);
 
                 var colorDiff = Math.Sqrt(lDiff + aDiff + bDiff);
-                totalDistance += (int)colorDiff;
+                totalDistance += colorDiff;
             }
 
             return -totalDistance;

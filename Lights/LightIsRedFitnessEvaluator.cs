@@ -5,7 +5,7 @@ namespace Lights
 {
     public class LightIsRedFitnessEvaluator : IFitnessEvaluator<LightsIndividual>
     {
-        public int Evaluate(LightsIndividual individual)
+        public double Evaluate(LightsIndividual individual)
         {
             return individual.Colors.Count(s => s.IsRed());
         }
@@ -19,8 +19,8 @@ namespace Lights
         {
             TargetColor = targetColor;
         }
-        
-        public int Evaluate(LightsIndividual individual)
+
+        public double Evaluate(LightsIndividual individual)
         {
             return individual.Colors.Count(s => s.Equals(TargetColor));
         }

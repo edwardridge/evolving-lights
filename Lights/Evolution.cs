@@ -5,26 +5,26 @@ using System.Text;
 
 namespace Lights
 {
-    public interface IIndividual
+    public interface IIndividual : ICloneable
     {
-        int Fitness { get; set; }
+        double Fitness { get; set; }
     }
 
-    public class Evolver<T> where T : IIndividual
+    public class Evolver<T> where T : class, IIndividual
     {
-        private readonly IFitnessEvaluator<T> _fitnessEvaluator;
+        public IFitnessEvaluator<T> FitnessEvaluator { get; }
         private readonly IBreedingSelector<T> _breedingSelector;
         private readonly IBreeder<T> _breeder;
         private readonly IMutater<T> _mutater;
         private Random _random;
         
         public int PercentageForBreeding { get; set; } = 50;        
-        public int PercentageToDie { get; set; } = 50;
+        public int PercentageChildrenToBreed { get; set; } = 50;
 
 
         public Evolver(IFitnessEvaluator<T> fitnessEvaluator, IBreedingSelector<T> breedingSelector, IBreeder<T> breeder, IMutater<T> mutater)
         {
-            _fitnessEvaluator = fitnessEvaluator;
+            FitnessEvaluator = fitnessEvaluator;
             _breedingSelector = breedingSelector;
             _breeder = breeder;
             _mutater = mutater;
@@ -44,61 +44,101 @@ namespace Lights
         public Population<T> GenerateNextPopulation(Population<T> population)
         {       
             var individuals = population.GetIndividuals();
-            SetFitness(individuals);
+            population.SetFitness(FitnessEvaluator);
             
             var breedingPopulation =
-                _breedingSelector.ChooseCandidatesForBreeding(individuals, PercentageForBreeding).ToArray();
+                _breedingSelector.ChooseCandidatesForBreeding(population, PercentageForBreeding);
 
-            var populationCountToRemove = PopulationToTake(PercentageToDie, individuals.Count);
+            var populationCountToRemove = PopulationToTake(PercentageChildrenToBreed, individuals.Count);
             
             var children = GenerateChildren(populationCountToRemove, breedingPopulation);
+            children.Mutate(_mutater);
 
-            var fittest = SelectFittestFromOriginalAndChildren(individuals, children);
+            population = SelectFittestFromOriginalAndChildren(population, children);
 
-            return new Population<T>(fittest.ToList());
+            return population;
         }
 
-        private void SetFitness(IEnumerable<T> individuals)
+        public Population<T> MultipleMutateAndReplace(Population<T> population, int numberOfPopulations)
         {
-            foreach (var individual in individuals)
+            for (int i = 0; i < numberOfPopulations; i++)
             {
-                individual.Fitness = _fitnessEvaluator.Evaluate(individual);
+                population = MutateAndReplaceIndividualIfFitter(population);
             }
+
+            return population;
+        }
+        
+        //Todo: Move out?
+        public Population<T> MutateAndReplaceIndividualIfFitter(Population<T> population)
+        {
+//            population.SetFitness(FitnessEvaluator);
+            var individuals = population.GetIndividuals();
+            for (int i = 0; i < individuals.Count; i++)
+            {
+                var originalInidividual = individuals[i];
+                var newIndividual = originalInidividual.Clone() as T;
+                _mutater.Mutate(newIndividual);
+                newIndividual.Fitness = FitnessEvaluator.Evaluate(newIndividual);
+                if (newIndividual.Fitness > originalInidividual.Fitness)
+                {
+                    individuals[i] = newIndividual;
+                }
+            }
+            return population;
+        }
+        
+        public static Population<T> GenerateInitialPopulation(IIndividualFactory<T> individualFactory, IFitnessEvaluator<T> fitnessEvaluator, int populationCount)
+        {
+            var individuals = new List<T>();
+            while (individuals.Count() < populationCount)
+            {
+                var newIndividual = individualFactory.GenerateIndividual();
+                newIndividual.Fitness = fitnessEvaluator.Evaluate(newIndividual);
+                individuals.Add(newIndividual);
+            }
+            
+            return new Population<T>(individuals);
         }
 
-        private IEnumerable<T> SelectFittestFromOriginalAndChildren(List<T> individuals, List<T> newPopulation)
+        private Population<T> SelectFittestFromOriginalAndChildren(Population<T> originalPopulation, Population<T> newPopulation)
         {
-            var combinedList = individuals.Concat(newPopulation);
-            SetFitness(combinedList);
-
-            combinedList = combinedList.OrderByDescending(f => f.Fitness).Take(individuals.Count);
-            return combinedList;
+            var originalCount = originalPopulation.GetIndividuals().Count;
+            originalPopulation.Combine(newPopulation);
+            originalPopulation.SetFitness(FitnessEvaluator);
+            originalPopulation.SelectFittest(originalCount);
+            return originalPopulation;
         }
 
-        private List<T> GenerateChildren(int populationCountToRemove, T[] breedingPopulation)
+        private Population<T> GenerateChildren(int populationCountToRemove, Population<T> breedingPopulation)
         {
-            var newPopulation = new List<T>();
+            var newPopulation = new Population<T>();
             for (var i = 0; i < populationCountToRemove; i++)
             {
                 var parent1 = GetRandomParent(breedingPopulation);
                 var parent2 = GetRandomParent(breedingPopulation);
 
                 var newIndividual = _breeder.Breed(parent1, parent2);
-                _mutater.Mutate(newIndividual);
 
                 newPopulation.Add(newIndividual);
             }
+            
             return newPopulation;
         }
 
-        private T GetRandomParent(T[] breedingPopulation)
+        private T GetRandomParent(Population<T> breedingPopulation)
         {
-            var index = _random.Next(0, breedingPopulation.Length - 1);
-            return breedingPopulation[index];
+            var individuals = breedingPopulation.GetIndividuals();
+            var index = _random.Next(0, individuals.Count - 1);
+            return individuals[index];
         }
 
         private static int PopulationToTake(int percentageToTake, int populationCount)
         {
+            if (percentageToTake == 0)
+            {
+                return 0;
+            }
             var populationCountToTake = populationCount / (100 / percentageToTake);
             return populationCountToTake;
         }
@@ -107,12 +147,12 @@ namespace Lights
         {
             var details = new StringBuilder();           
             details.AppendLine("Population type: " + this.GetType().GetGenericArguments().First().Name);
-            details.AppendLine("Fitness evaluator: " + _fitnessEvaluator.GetType().Name);
+            details.AppendLine("Fitness evaluator: " + FitnessEvaluator.GetType().Name);
             details.AppendLine("Breeding selector: " + _breedingSelector.GetType().Name);
             details.AppendLine("Breeder: " + _breeder.GetType().Name);
             details.AppendLine("Mutater: " + _mutater.GetType().Name);
             details.AppendLine("Percentage For Breeding: " + PercentageForBreeding);
-            details.AppendLine("Percentage To Die: " + PercentageToDie);
+            details.AppendLine("Percentage Children: " + PercentageChildrenToBreed);
 
             return details.ToString();
         }
@@ -127,32 +167,56 @@ namespace Lights
             _individuals = individuals;
         }
 
+        public Population()
+        {
+            _individuals = new List<T>();
+        }
+
         public List<T> GetIndividuals()
         {
             return _individuals;
         }
-        
-        public static Population<T> GenerateInitialPopulation(IIndividualFactory<T> individualFactory, int populationCount)
+
+        public void SetFitness(IFitnessEvaluator<T> fitnessEvaluator)
         {
-            var individuals = new List<T>();
-            while (individuals.Count() < populationCount)
+            foreach (var individual in this._individuals)
             {
-                var newIndividual = individualFactory.GenerateIndividual();
-                individuals.Add(newIndividual);
+                individual.Fitness = fitnessEvaluator.Evaluate(individual);
             }
-            
-            return new Population<T>(individuals);
+        }
+
+        public void Combine(Population<T> newPopulation)
+        {
+            this._individuals.AddRange(newPopulation._individuals);
+        }
+
+        public void Add(T newIndividual)
+        {
+            this._individuals.Add(newIndividual);
+        }
+    
+        public void SelectFittest(int originalCount)
+        {
+            this._individuals = this._individuals.OrderByDescending(f => f.Fitness).Take(originalCount).ToList();
+        }
+
+        public void Mutate(IMutater<T> mutater)
+        {
+            foreach (var individual in _individuals)
+            {
+                mutater.Mutate(individual);
+            }
         }
     }
     
     public class EliteBreedingSelector<T> : IBreedingSelector<T> where T : IIndividual
     {
-        public IEnumerable<T> ChooseCandidatesForBreeding(IEnumerable<T> population, int percentageToTake)
+        public Population<T> ChooseCandidatesForBreeding(Population<T> population, int percentageToTake)
         {
-            var orderedPopulation = population.OrderByDescending(o => o.Fitness);
+            var orderedPopulation = population.GetIndividuals().OrderByDescending(o => o.Fitness);
             var breedingPopulation = GetBreedingPopulation(percentageToTake, orderedPopulation).ToArray();
 
-            return breedingPopulation;
+            return new Population<T>(breedingPopulation.ToList());
         }
         
         private static IEnumerable<T> GetBreedingPopulation(int percentageToTake, IEnumerable<T> population)
@@ -172,7 +236,7 @@ namespace Lights
 
     public interface IBreedingSelector<T> where T : IIndividual
     {
-        IEnumerable<T> ChooseCandidatesForBreeding(IEnumerable<T> population, int percentageToTake);
+        Population<T> ChooseCandidatesForBreeding(Population<T> population, int percentageToTake);
     }
 
     public interface IIndividualFactory<T> where T : IIndividual
@@ -182,7 +246,7 @@ namespace Lights
 
     public interface IFitnessEvaluator<T> where T : IIndividual
     {
-        int Evaluate(T individual);
+        double Evaluate(T individual);
     }
 
     public interface IBreeder<T> where T : IIndividual

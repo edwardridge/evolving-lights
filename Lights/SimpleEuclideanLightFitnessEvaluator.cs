@@ -11,9 +11,9 @@ namespace Lights
             TargetColor = targetColor;
         }
         
-        public int Evaluate(LightsIndividual individual)
+        public double Evaluate(LightsIndividual individual)
         {
-            var totalDistance = 0;
+            var totalDistance = 0.0;
             foreach (var color in individual.Colors)
             {
                 var redDiff = Math.Pow(TargetColor.Red - color.Red, 2);
@@ -21,7 +21,7 @@ namespace Lights
                 var blueDiff = Math.Pow(TargetColor.Blue - color.Blue, 2);
 
                 var colorDiff = Math.Sqrt(redDiff + greenDiff + blueDiff);
-                totalDistance += (int)colorDiff;
+                totalDistance += colorDiff;
             }
 
             return -totalDistance;

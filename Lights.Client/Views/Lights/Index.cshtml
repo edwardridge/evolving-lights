@@ -12,19 +12,30 @@
     height: 20px;
     display: inline-block;
     margin: 0px;
+    transition: background-color 500ms linear;
   }
 
   .colorLine{
     padding: 0px;
     margin: 5px;
-    display: inline-block;
+    display: block;
+  }
+  
+  .test {
+    background-color: blue;
+    transition: background-color 500ms linear;
+    -webkit-transition: background-color 500ms linear;
   }
 </style>
 
 <div ng-app="MyApp" style="margin-top: 50px" ng-controller="lights as ctrl">
   <div>
-    Generate next populations:
-    <input type="button" ng-click="ctrl.changeColors = !ctrl.changeColors" ng-value="ctrl.changeColors">
+    Generate next
+    <input type="number" ng-model="ctrl.populationsToGenerate"/>
+    population{{ctrl.populationsToGenerate > 1 ? "s" : ""}}:
+    <input type="button" ng-click="ctrl.getNextPopulations(1)" ng-if="!ctrl.changeColors" value="One">
+    </input>
+    <input type="button" ng-click="ctrl.changeColors = !ctrl.changeColors" ng-value="ctrl.changeColors === true ? 'Repeating' : 'Off'">
     </input>
   </div>
   <div>
@@ -35,7 +46,7 @@
 
   </div>
   <div ng-repeat="colorLine in ctrl.colorLines" class="colorLine">
-    <span class="light" ng-repeat="color in colorLine" ng-style="ctrl.setCssColor(color)">
+    <span class="light" ng-repeat="color in colorLine.Colors" ng-style="ctrl.setCssColor(color)">
     </span>
   </div>
 

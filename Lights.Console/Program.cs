@@ -17,7 +17,7 @@ namespace Lights.Console
             var factory = new BinaryLightsIndividualFactory(random);
             var formatter = new BinaryLightsPopulationFormatter();
 
-            var population = Population<LightsIndividual>.GenerateInitialPopulation(factory, 10);
+            var population = Evolver<LightsIndividual>.GenerateInitialPopulation(factory,new SimpleEuclideanLightFitnessEvaluator(Color.NewRed()),  10);
             formatter.Format(population);
 
             var evolver = BinaryLightsEvololverFactory.Create();
@@ -36,7 +36,7 @@ namespace Lights.Console
             var binaryStringIndividualFactory = new BinaryStringIndividualFactory(random);
             var formatter = new BinaryStringPopulationFormatter();
 
-            var population = Population<BinaryStringIndividual>.GenerateInitialPopulation(binaryStringIndividualFactory, 10);
+            var population = Evolver<BinaryStringIndividual>.GenerateInitialPopulation(binaryStringIndividualFactory, new BinaryStringFitnessEvaluator(),  10);
             formatter.Format(population);
 
             var fitnessEvaluator = new BinaryStringFitnessEvaluator();

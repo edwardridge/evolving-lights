@@ -22,7 +22,7 @@ namespace Lights.Client.Controllers
             {
                 EvolverBuilder = new DefaultLightsEvoloverBuilder()
                     .WithDefaults()
-                    .WithMutater(new RandomHalfLightsMutator(Random));
+                    .WithMutater(new SlightChangeLightsMutator(Random));
                 Evolver = EvolverBuilder.Build();
             }
         }
@@ -34,24 +34,32 @@ namespace Lights.Client.Controllers
 
         public JsonResult GetInitialPopulation()
         {
-            Population = EvolverBuilder.GenerateInitialPopulation(20);
+            Population = EvolverBuilder.GenerateInitialPopulation(50);
             return Json(Population.GetIndividuals(), JsonRequestBehavior.AllowGet);
         }
         
         [HttpPost]
-        public JsonResult GetNextPopulation()
+        public JsonResult GetNextPopulation(int populations)
         {
-            Population = Evolver.GenerateNextPopulations(Population, 20);
+//            Population = Evolver.GenerateNextPopulations(Population, populations);
+            Population = Evolver.MultipleMutateAndReplace(Population, populations);
+            //MultipleMutateAndReplace
             return Json(Population.GetIndividuals(), JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
         public HttpStatusCode SetTargetColor(int red, int green, int blue)
         {
-            var defaultLightsEvoloverBuilder = (EvolverBuilder as DefaultLightsEvoloverBuilder);
-            defaultLightsEvoloverBuilder.SetTargetColor(new Color(red, green, blue));
-            Evolver = EvolverBuilder.Build();
+            var fitnesEvaluator = (Evolver.FitnessEvaluator as SimpleEuclideanLightFitnessEvaluator);
+            fitnesEvaluator.TargetColor = new Color(red, green, blue);
+            Population.SetFitness(fitnesEvaluator);
             return HttpStatusCode.OK;
+        }
+        
+        public JsonResult GetTargetColor()
+        {
+            var fitnesEvaluator = (Evolver.FitnessEvaluator as SimpleEuclideanLightFitnessEvaluator);
+            return Json(fitnesEvaluator.TargetColor, JsonRequestBehavior.AllowGet);
         }
         
         public string GetEvolutionDetails()

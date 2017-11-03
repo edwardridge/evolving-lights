@@ -1,6 +1,8 @@
-﻿namespace Lights
+﻿using System;
+
+namespace Lights
 {
-    public class Color
+    public class Color : ICloneable
     {
         public int Red { get; set; }
         
@@ -77,6 +79,11 @@
                 hashCode = (hashCode * 397) ^ Blue;
                 return hashCode;
             }
+        }
+
+        public object Clone()
+        {
+            return new Color(this.Red, this.Green, this.Blue);
         }
     }
 }

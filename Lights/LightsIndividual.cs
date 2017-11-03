@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Lights
 {
@@ -11,6 +12,11 @@ namespace Lights
         
         public List<Color> Colors { get; }
         
-        public int Fitness { get; set; }
+        public double Fitness { get; set; }
+        
+        public object Clone()
+        {
+            return new LightsIndividual(this.Colors.Select(s => s.Clone() as Color).ToList());
+        }
     }
 }

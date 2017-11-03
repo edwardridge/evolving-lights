@@ -13,12 +13,17 @@ namespace Lights
 
         public string BinaryString { get; set; }
         
-        public int Fitness { get; set; }
+        public double Fitness { get; set; }
+        
+        public object Clone()
+        {
+            return new BinaryStringIndividual(BinaryString);
+        }
     }
 
     public class BinaryStringFitnessEvaluator : IFitnessEvaluator<BinaryStringIndividual>
     {
-        public int Evaluate(BinaryStringIndividual individual)
+        public double Evaluate(BinaryStringIndividual individual)
         {
             return individual.BinaryString.Count(s => s == '1');
         }

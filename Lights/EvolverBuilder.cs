@@ -2,7 +2,7 @@
 
 namespace Lights
 {
-    public abstract class EvolverBuilder<T> where T : IIndividual
+    public abstract class EvolverBuilder<T> where T : class, IIndividual
     {
         protected Random random;
         private IFitnessEvaluator<T> fitnessEvaluator;
@@ -48,7 +48,7 @@ namespace Lights
         
         public Population<T> GenerateInitialPopulation(int populationCount)
         {
-            return Population<T>.GenerateInitialPopulation(individualFactory, populationCount);
+            return Evolver<T>.GenerateInitialPopulation(individualFactory, fitnessEvaluator, populationCount);
         }
 
         public Evolver<T> Build()
