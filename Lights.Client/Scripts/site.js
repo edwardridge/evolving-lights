@@ -4,6 +4,7 @@ $(function() {
     $.get(window.apiBase + "GetTargetColor").then(function (result)   {
         var test = rgbToHex(result.Red, result.Green, result.Blue);
         var $cp2 = $('#cp2');
+        $('body,html').css('background-color','rgb(' + result.Red + ', ' + result.Green + ', ' + result.Blue+ ')');
         $cp2.colorpicker({
             format: 'rgb',
             color: test
@@ -15,6 +16,7 @@ $(function() {
                 "blue": rgb.b
             }
             $.post(window.apiBase + "SetTargetColor", data).then(function(result){
+                $('body,html').css('background-color','rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')');
             }).catch(function (error){
                 console.log(error.data);
             });
@@ -41,11 +43,14 @@ function lights($timeout, $http){
     
     var that = this;
     this.populationsToGenerate = 500;
-
-    $http.get(window.apiBase + "GetInitialPopulation").then(function(result){
-        that.colorLines = result.data;
-    });
-
+    
+    this.generateInitialPopulation = function () {
+        $http.get(window.apiBase + "GetInitialPopulation").then(function(result){
+            that.colorLines = result.data;
+        });
+    }
+    
+    this.generateInitialPopulation();
     $http.get(window.apiBase + "GetEvolutionDetails").then(function(result){
         that.evolutionDetails = result.data;
     });
