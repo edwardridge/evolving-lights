@@ -34,7 +34,7 @@ namespace Lights.Client.Controllers
 
         public JsonResult GetInitialPopulation()
         {
-            Population = EvolverBuilder.GenerateInitialPopulation(50);
+            Population = EvolverBuilder.GenerateInitialPopulation(850);
             return Json(Population.GetIndividuals(), JsonRequestBehavior.AllowGet);
         }
         

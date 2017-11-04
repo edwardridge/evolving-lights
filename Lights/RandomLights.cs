@@ -50,7 +50,7 @@ namespace Lights
         public LightsIndividual GenerateIndividual()
         {
             var colorList = new List<Color>();
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 1; i++)
             {
                 colorList.Add(RandomLightsGenerator.GenerateRandomColor(_random));
             }

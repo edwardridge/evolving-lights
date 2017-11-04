@@ -39,15 +39,29 @@ angular.module('MyApp', [])
     .controller('lights', ['$timeout', '$http', lights])
 
 function lights($timeout, $http){
+    var that = this;
+    that.testNgStyle = {"background-color": "rgb(0, 100, 0)"}
+    this.testChangeColor = function (){
+        that.testNgStyle = {"background-color": "rgb(200, 100, 100)"}
+    } 
+    
     this.changeColors = false;
     
-    var that = this;
     this.populationsToGenerate = 500;
     
     this.generateInitialPopulation = function () {
         $http.get(window.apiBase + "GetInitialPopulation").then(function(result){
-            that.colorLines = result.data;
+            that.colorLines = result.data.map(that.mapResult);
         });
+    }
+    
+    this.mapResult = function (result) {
+        return {
+            "Colors": result.Colors.map(color => {
+                return that.setCssColor(color);
+            }),
+            "Fitness": result.Fitness
+        };
     }
     
     this.generateInitialPopulation();
@@ -65,7 +79,13 @@ function lights($timeout, $http){
     this.getNextPopulations = function(populations) {
         var data = {"populations": populations};
         $http.post(window.apiBase + "GetNextPopulation", data).then(function (result) {
-            that.colorLines = result.data;
+            var newColors = result.data.map(that.mapResult);
+            for (var i = 0; i < that.colorLines.length; i++){
+                for (var j = 0; j < that.colorLines[i].Colors.length; j++){
+                    that.colorLines[i].Colors[j]["background-color"] = newColors[i].Colors[j]["background-color"];
+                    // that.testNgStyle["background-color"] = that.colorLines[0].Colors[0]["background-color"];
+                }
+            }
         });
     }
 

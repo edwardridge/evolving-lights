@@ -12,7 +12,8 @@
     height: 20px;
     display: inline-block;
     margin: 0px;
-    transition: background-color 500ms linear;
+    background-color: white;
+    transition: 1s ease-in-out;
   }
 
   .colorLine{
@@ -20,15 +21,31 @@
     margin: 5px;
     display: inline-block;
   }
+  
+  .test {
+    background-color: #454422;
+    height: 30px;
+    width: 30px;
+    transition: .7s ease-in-out;
+  }
+  
+  .test:hover {
+    background-color: #453300;
+  }
 </style>
 
-<div ng-app="MyApp" style="margin-top: 50px" ng-controller="lights as ctrl">
+<div ng-app="MyApp" style="margin-top: 50px" ng-controller="lights as ctrl">  
+@*  <div ng-repeat="colorLine in ctrl.colorLines" class="colorLine">*@
+@*    <span class="light" ng-style="ctrl.testNgStyle">*@
+@*    </span>*@
+@*  </div>*@
+@*  <input type="button" ng-click="ctrl.testChangeColor()" value="change"/>*@
   <div>
     Generate next
     <input type="number" ng-model="ctrl.populationsToGenerate"/>
     population{{ctrl.populationsToGenerate > 1 ? "s" : ""}}:
-@*    <input type="button" ng-click="ctrl.getNextPopulations(1)" ng-if="!ctrl.changeColors" value="One">*@
-@*    </input>*@
+    @*    <input type="button" ng-click="ctrl.getNextPopulations(1)" ng-if="!ctrl.changeColors" value="One">*@
+    @*    </input>*@
     <input type="button" ng-click="ctrl.generateInitialPopulation()" value="Generate initial population">
     </input>
     <input type="button" ng-click="ctrl.changeColors = !ctrl.changeColors" ng-value="ctrl.changeColors === true ? 'Repeating' : 'Off'">
@@ -42,7 +59,8 @@
 
   </div>
   <div ng-repeat="colorLine in ctrl.colorLines" class="colorLine">
-    <span class="light" ng-repeat="color in colorLine.Colors" ng-style="ctrl.setCssColor(color)">
+    <span class="light" ng-repeat="color in colorLine.Colors" ng-style="color">
+      
     </span>
   </div>
 

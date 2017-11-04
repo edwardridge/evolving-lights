@@ -72,7 +72,6 @@ namespace Lights
         //Todo: Move out?
         public Population<T> MutateAndReplaceIndividualIfFitter(Population<T> population)
         {
-//            population.SetFitness(FitnessEvaluator);
             var individuals = population.GetIndividuals();
             for (int i = 0; i < individuals.Count; i++)
             {
