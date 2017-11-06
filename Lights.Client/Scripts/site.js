@@ -40,6 +40,8 @@ angular.module('MyApp', [])
 
 function lights($timeout, $http){
     var that = this;
+    that.totalDifferenceInFitness = 0;
+    that.chaningColor = false;
     that.testNgStyle = {"background-color": "rgb(0, 100, 0)"}
     this.testChangeColor = function (){
         that.testNgStyle = {"background-color": "rgb(200, 100, 100)"}
@@ -80,11 +82,38 @@ function lights($timeout, $http){
         var data = {"populations": populations};
         $http.post(window.apiBase + "GetNextPopulation", data).then(function (result) {
             var newColors = result.data.map(that.mapResult);
+            
+            
             for (var i = 0; i < that.colorLines.length; i++){
                 for (var j = 0; j < that.colorLines[i].Colors.length; j++){
                     that.colorLines[i].Colors[j]["background-color"] = newColors[i].Colors[j]["background-color"];
-                    // that.testNgStyle["background-color"] = that.colorLines[0].Colors[0]["background-color"];
                 }
+            }
+            
+            that.totalDifferenceInFitness = Math.max(...newColors.map(s => -s.Fitness));
+            if (that.totalDifferenceInFitness < 5){
+                if (that.chaningColor === false){
+                    that.chaningColor = true;
+                    $timeout(() => {
+
+                        var red = Math.floor(Math.random() * 256);
+                    var green = Math.floor(Math.random() * 256);
+                    var blue = Math.floor(Math.random() * 256);
+                    var data = {
+                        "red": red,
+                        "green": green,
+                        "blue": blue
+                    }
+                    $.post(window.apiBase + "SetTargetColor", data).then(function(result){
+                        that.chaningColor = false;
+                        $('body,html').css('background-color','rgb(' + red + ', ' + green + ', ' + blue + ')');
+                    }).catch(function (error){
+                        console.log(error.data);
+                    });
+                }, 1000);
+                }
+                
+                
             }
         });
     }

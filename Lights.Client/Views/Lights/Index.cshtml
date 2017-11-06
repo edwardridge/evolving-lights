@@ -5,15 +5,16 @@
 <style>
   body {
     padding: 20px;
+    transition: 1s linear;
   }
 
   .light{
-    width: 20px;
-    height: 20px;
+    width: 40px;
+    height: 40px;
     display: inline-block;
     margin: 0px;
     background-color: white;
-    transition: 1s ease-in-out;
+    transition: 1s linear;
   }
 
   .colorLine{
@@ -39,25 +40,24 @@
 @*    <span class="light" ng-style="ctrl.testNgStyle">*@
 @*    </span>*@
 @*  </div>*@
-@*  <input type="button" ng-click="ctrl.testChangeColor()" value="change"/>*@
+  @*  <input type="button" ng-click="ctrl.testChangeColor()" value="change"/>*@
   <div>
-    Generate next
+    Populations to generate:
     <input type="number" ng-model="ctrl.populationsToGenerate"/>
-    population{{ctrl.populationsToGenerate > 1 ? "s" : ""}}:
     @*    <input type="button" ng-click="ctrl.getNextPopulations(1)" ng-if="!ctrl.changeColors" value="One">*@
     @*    </input>*@
-    <input type="button" ng-click="ctrl.generateInitialPopulation()" value="Generate initial population">
-    </input>
-    <input type="button" ng-click="ctrl.changeColors = !ctrl.changeColors" ng-value="ctrl.changeColors === true ? 'Repeating' : 'Off'">
+@*    <input type="button" ng-click="ctrl.generateInitialPopulation()" value="Generate initial population">*@
+@*    </input>*@
+    <input type="button" ng-click="ctrl.changeColors = !ctrl.changeColors" ng-value="ctrl.changeColors === true ? 'On' : 'Off'">
     </input>
   </div>
-  <div>
-    Set target color:
-    <div id="cp2" class="input-group colorpicker-component" style="display: inline-block; margin-left: 10px; border: 1px dotted;">
-      <span class="input-group-addon" style="width: 30px; height: 30px; padding: 0px"><i style="width: 100%; height: 100%"></i></span>
-    </div>
-
-  </div>
+@*  <div>*@
+@*    Set target color:*@
+@*    <div id="cp2" class="input-group colorpicker-component" style="display: inline-block; margin-left: 10px; border: 1px dotted;">*@
+@*      <span class="input-group-addon" style="width: 30px; height: 30px; padding: 0px"><i style="width: 100%; height: 100%"></i></span>*@
+@*    </div>*@
+@**@
+@*  </div>*@
   <div ng-repeat="colorLine in ctrl.colorLines" class="colorLine">
     <span class="light" ng-repeat="color in colorLine.Colors" ng-style="color">
       
